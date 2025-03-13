@@ -11,6 +11,12 @@ import {
   HiSearch,
   HiShoppingBag,
   HiUsers,
+  HiDocumentText,
+  HiOfficeBuilding,
+  HiCurrencyDollar,
+  HiCreditCard,
+  HiArchive,
+  HiCog,
 } from "react-icons/hi";
 
 const ExampleSidebar: FC = function () {
@@ -68,6 +74,118 @@ const ExampleSidebar: FC = function () {
               >
                 Users list
               </Sidebar.Item>
+              <Sidebar.Item
+                href="/reclamation"
+                icon={HiDocumentText}
+                className={
+                  "/reclamation" === currentPage
+                    ? "bg-gray-100 dark:bg-gray-700"
+                    : ""
+                }
+              >
+                Reclamation
+              </Sidebar.Item>
+              <Sidebar.Item
+                href="/fournisseurs"
+                icon={HiOfficeBuilding}
+                className={
+                  "/fournisseurs" === currentPage
+                    ? "bg-gray-100 dark:bg-gray-700"
+                    : ""
+                }
+              >
+                Fournisseurs
+              </Sidebar.Item>
+              <Sidebar.Item
+                href="/facturation"
+                icon={HiCurrencyDollar}
+                className={
+                  "/facturation" === currentPage
+                    ? "bg-gray-100 dark:bg-gray-700"
+                    : ""
+                }
+              >
+                Facturation
+              </Sidebar.Item>
+              <Sidebar.Item
+                href="/paiement"
+                icon={HiCreditCard}
+                className={
+                  "/paiement" === currentPage
+                    ? "bg-gray-100 dark:bg-gray-700"
+                    : ""
+                }
+              >
+                Paiement
+              </Sidebar.Item>
+              <Sidebar.Collapse
+                label="Stock"
+                icon={HiArchive}
+                open={currentPage.startsWith("/stock")}
+              >
+                <Sidebar.Item
+                  href="/stock/zona1"
+                  className={
+                    "/stock/zona1" === currentPage
+                      ? "bg-gray-100 dark:bg-gray-700"
+                      : ""
+                  }
+                >
+                  Zona 1
+                </Sidebar.Item>
+                <Sidebar.Item
+                  href="/stock/zona2"
+                  className={
+                    "/stock/zona2" === currentPage
+                      ? "bg-gray-100 dark:bg-gray-700"
+                      : ""
+                  }
+                >
+                  Zona 2
+                </Sidebar.Item>
+                <Sidebar.Item
+                  href="/stock/zona3"
+                  className={
+                    "/stock/zona3" === currentPage
+                      ? "bg-gray-100 dark:bg-gray-700"
+                      : ""
+                  }
+                >
+                  Zona 3
+                </Sidebar.Item>
+                <Sidebar.Item
+                  href="/stock/zona4"
+                  className={
+                    "/stock/zona4" === currentPage
+                      ? "bg-gray-100 dark:bg-gray-700"
+                      : ""
+                  }
+                >
+                  Zona 4
+                </Sidebar.Item>
+              </Sidebar.Collapse>
+              <Sidebar.Item
+                href="/stagiaires"
+                icon={HiUsers}
+                className={
+                  "/stagiaires" === currentPage
+                    ? "bg-gray-100 dark:bg-gray-700"
+                    : ""
+                }
+              >
+                Stagiaires
+              </Sidebar.Item>
+              <Sidebar.Item
+                href="/chambres"
+                icon={HiOfficeBuilding}
+                className={
+                  "/chambres" === currentPage
+                    ? "bg-gray-100 dark:bg-gray-700"
+                    : ""
+                }
+              >
+                Chambres
+              </Sidebar.Item>
               <Sidebar.Item href="/authentication/sign-in" icon={HiLogin}>
                 Sign in
               </Sidebar.Item>
@@ -77,22 +195,10 @@ const ExampleSidebar: FC = function () {
             </Sidebar.ItemGroup>
             <Sidebar.ItemGroup>
               <Sidebar.Item
-                href="https://github.com/themesberg/flowbite-react/"
-                icon={HiClipboard}
+                href="/settings"
+                icon={HiCog}
               >
-                Docs
-              </Sidebar.Item>
-              <Sidebar.Item
-                href="https://flowbite-react.com/"
-                icon={HiCollection}
-              >
-                Components
-              </Sidebar.Item>
-              <Sidebar.Item
-                href="https://github.com/themesberg/flowbite-react/issues"
-                icon={HiInformationCircle}
-              >
-                Help
+                Settings
               </Sidebar.Item>
             </Sidebar.ItemGroup>
           </Sidebar.Items>
