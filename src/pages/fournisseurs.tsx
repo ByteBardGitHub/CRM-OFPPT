@@ -76,6 +76,7 @@ const FournisseursPage: FC = function () {
 };
 
 const FournisseursTable: FC = function () {
+
   const fournisseurs = [
     {
       name: "Robert Fox",

@@ -1,106 +1,37 @@
 const express = require('express');
 const mongoose = require('mongoose');
-const bodyParser = require('body-parser');
+const userRoutes = require('./routes/userRoutes');
+const reclamationRoutes = require('./routes/reclamationRoutes');
+const fournisseurRoutes = require('./routes/fournisseurRoutes');
+const authRoutes = require('./routes/authRoutes');
+const { authenticateJWT } = require('./middleware/authMiddleware');
 
-// Define the User model with fullName and role fields
-const userSchema = new mongoose.Schema({
-  email: String,
-  password: String,
-  fullName: String,
-  role: String,
-});
-
-const User = mongoose.model('User', userSchema);
+require('dotenv').config();
 
 const app = express();
-app.use(bodyParser.json());
+app.use(express.json());
 
-// Database connection
-mongoose.connect('mongodb://localhost:27017/ofpptcrm', {
+const PORT = process.env.PORT || 3002;
+
+// Connect to MongoDB
+mongoose.connect(process.env.MONGO_URI, {
   useNewUrlParser: true,
-  useUnifiedTopology: true,
+  useUnifiedTopology: true
+}).then(() => console.log('MongoDB connected'))
+  .catch(err => console.log(err));
+
+// Routes
+app.use('/api/login', authRoutes);
+app.use('/api/users', authenticateJWT, userRoutes);
+app.use('/api/reclamations', authenticateJWT, reclamationRoutes);
+app.use('/api/fournisseurs', authenticateJWT, fournisseurRoutes);
+
+// Global error handling middleware
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).send('Something broke!');
 });
 
-const db = mongoose.connection;
-db.on('error', console.error.bind(console, 'connection error:'));
-db.once('open', function() {
-  console.log('Connected to MongoDB Database');
-});
-
-// Insert demo admin user
-const insertDemoUser = async () => {
-  try {
-    const adminUser = new User({
-      email: "admin@example.com",
-      password: "admin123",
-      fullName: "Admin User",
-      role: "admin",
-    });
-    await adminUser.save();
-    console.log('Admin user created');
-  } catch (error) {
-    console.error('Error creating admin user:', error);
-  }
-}
-
-// Call the function to create the admin user
-(async () => {
-  await db.once('open', async function() {
-    console.log('Connected to MongoDB Database');
-    await insertDemoUser();
-  });
-
-  // Create admin user if not exists
-  await User.findOne({ email: "admin@gmail.com" }, async (err, user) => {
-    if (err) throw err;
-    if (!user) {
-      try {
-        const adminUser = new User({
-          email: "admin@gmail.com",
-          password: "admin123",
-          fullName: "Admin User",
-          role: "admin",
-        });
-        await adminUser.save();
-        console.log('Admin user created');
-      } catch (error) {
-        console.error('Error creating admin user:', error);
-      }
-    } else {
-      console.log('Admin user already exists');
-    }
-  });
-})();
-
-// User Sign-In API
-app.post('/api/signin', async (req, res) => {
-  const { email, password } = req.body;
-  try {
-    const user = await User.findOne({ email, password });
-    if (user) {
-      res.status(200).send('Sign-In Successful');
-    } else {
-      res.status(401).send('email or password is incorrect');
-    }
-  } catch (err) {
-    res.status(500).send('Internal Server Error');
-  }
-});
-
-app.get('/api/users', async (req, res) => {
-  try {
-    const users = await User.find();
-    if (users.length > 0) {
-      res.status(200).send(users);
-    } else {
-      res.status(404).send('No users found');
-    }
-  } catch (err) {
-    res.status(500).send('Internal Server Error');
-  }
-});
-
-const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
