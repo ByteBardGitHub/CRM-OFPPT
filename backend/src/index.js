@@ -13,6 +13,13 @@ app.use(express.json());
 
 const PORT = process.env.PORT || 3002;
 
+const cors = require('cors');
+app.use(cors({
+  origin: 'http://localhost:5173', // Autorise uniquement ton frontend
+  credentials: true, // Autorise l'envoi des cookies et headers d'authentification
+}));
+
+
 // Connect to MongoDB
 mongoose.connect(process.env.MONGO_URI, {
   useNewUrlParser: true,
