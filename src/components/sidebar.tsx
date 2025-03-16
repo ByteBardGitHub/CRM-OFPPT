@@ -17,6 +17,7 @@ import {
   HiArchive,
   HiCog,
   HiLogout,
+  HiBookOpen
 } from "react-icons/hi";
 import { motion } from "framer-motion";
 
@@ -89,6 +90,9 @@ const ExampleSidebar: FC = function () {
               </Sidebar.Item>
               <Sidebar.Item as={Link} to="/chambres" icon={HiOfficeBuilding} className={currentPage === "/chambres" ? "bg-gray-100 dark:bg-gray-700" : ""}>
                 Chambres
+              </Sidebar.Item>
+               <Sidebar.Item as={Link} to="/inscription" icon={HiBookOpen} className={currentPage === "/chambres" ? "bg-gray-100 dark:bg-gray-700" : ""}>
+                Inscription
               </Sidebar.Item>
                <Sidebar.Item as={Link} to="/users" icon={HiUsers} className={currentPage === "/users/list" ? "bg-gray-100 dark:bg-gray-700" : ""}>
                 Users list

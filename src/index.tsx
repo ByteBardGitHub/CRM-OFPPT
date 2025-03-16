@@ -21,6 +21,7 @@ import ProtectedRoute from "./components/ProtectedRoute"; // Import ProtectedRou
 import Settings from "./pages/settings";
 import EcommerceProductsPage from "./pages/e-commerce/products";
 import UserListPage from "./pages/users/list";
+import Inscription from "./pages/Inscription";
 
 const container = document.getElementById("root");
 
@@ -47,6 +48,7 @@ root.render(
             <Route path="/facturation" element={<FacturationPage />} />
             <Route path="/paiement" element={<PaiementPage />} />
             <Route path="/stagiaires" element={<StagiairesPage />} />
+            <Route path="/inscription" element={<Inscription />} />
             <Route path="/chambres" element={<ChambresPage />} />
             <Route path="/settings" element={<Settings />} />
             <Route path="/stock/zona1" element={<Zona1Page />} />

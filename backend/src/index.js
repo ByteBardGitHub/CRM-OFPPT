@@ -5,6 +5,8 @@ const reclamationRoutes = require('./routes/reclamationRoutes');
 const fournisseurRoutes = require('./routes/fournisseurRoutes');
 const authRoutes = require('./routes/authRoutes');
 const { authenticateJWT } = require('./middleware/authMiddleware');
+const inscriptionRoutes = require('./routes/inscriptionsRoutes');
+
 
 require('dotenv').config();
 
@@ -32,6 +34,8 @@ app.use('/api/login', authRoutes);
 app.use('/api/users', authenticateJWT, userRoutes);
 app.use('/api/reclamations', authenticateJWT, reclamationRoutes);
 app.use('/api/fournisseurs', authenticateJWT, fournisseurRoutes);
+app.use('/api/inscriptions', authenticateJWT, inscriptionRoutes);
+
 
 // Global error handling middleware
 app.use((err, req, res, next) => {
