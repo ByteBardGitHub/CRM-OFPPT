@@ -48,12 +48,10 @@ const ExampleSidebar: FC = function () {
               <Sidebar.Item as={Link} to="/dashboard" icon={HiChartPie} className={currentPage === "/dashboard" ? "bg-gray-100 dark:bg-gray-700" : ""}>
                 Dashboard
               </Sidebar.Item>
-              <Sidebar.Item as={Link} to="/e-commerce/products" icon={HiShoppingBag} className={currentPage === "/e-commerce/products" ? "bg-gray-100 dark:bg-gray-700" : ""}>
+              <Sidebar.Item as={Link} to="products" icon={HiShoppingBag} className={currentPage === "/e-commerce/products" ? "bg-gray-100 dark:bg-gray-700" : ""}>
                 Products
               </Sidebar.Item>
-              <Sidebar.Item as={Link} to="/users/list" icon={HiUsers} className={currentPage === "/users/list" ? "bg-gray-100 dark:bg-gray-700" : ""}>
-                Users list
-              </Sidebar.Item>
+             
               <Sidebar.Item as={Link} to="/reclamation" icon={HiDocumentText} className={currentPage === "/reclamation" ? "bg-gray-100 dark:bg-gray-700" : ""}>
                 Reclamation
               </Sidebar.Item>
@@ -66,6 +64,7 @@ const ExampleSidebar: FC = function () {
               <Sidebar.Item as={Link} to="/paiement" icon={HiCreditCard} className={currentPage === "/paiement" ? "bg-gray-100 dark:bg-gray-700" : ""}>
                 Paiement
               </Sidebar.Item>
+
               <Sidebar.Collapse label="Stock" icon={HiArchive} open={currentPage.startsWith("/stock")}>
                   <motion.div
                   initial={{ opacity: 0, height: 0 }}
@@ -90,6 +89,9 @@ const ExampleSidebar: FC = function () {
               </Sidebar.Item>
               <Sidebar.Item as={Link} to="/chambres" icon={HiOfficeBuilding} className={currentPage === "/chambres" ? "bg-gray-100 dark:bg-gray-700" : ""}>
                 Chambres
+              </Sidebar.Item>
+               <Sidebar.Item as={Link} to="/users" icon={HiUsers} className={currentPage === "/users/list" ? "bg-gray-100 dark:bg-gray-700" : ""}>
+                Users list
               </Sidebar.Item>
             </Sidebar.ItemGroup>
             <Sidebar.ItemGroup>

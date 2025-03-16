@@ -18,6 +18,9 @@ import Zona2Page from "./pages/stock/zona2";
 import Zona3Page from "./pages/stock/zona3";
 import Zona4Page from "./pages/stock/zona4";
 import ProtectedRoute from "./components/ProtectedRoute"; // Import ProtectedRoute
+import Settings from "./pages/settings";
+import EcommerceProductsPage from "./pages/e-commerce/products";
+import UserListPage from "./pages/users/list";
 
 const container = document.getElementById("root");
 
@@ -38,11 +41,14 @@ root.render(
           <Route element={<ProtectedRoute />}>
             <Route path="/dashboard" element={<DashboardPage />} />
             <Route path="/reclamation" element={<ReclamationPage />} />
+            <Route path="/products" element={<EcommerceProductsPage />} />
+            <Route path="/users" element={<UserListPage />} />
             <Route path="/fournisseurs" element={<FournisseursPage />} />
             <Route path="/facturation" element={<FacturationPage />} />
             <Route path="/paiement" element={<PaiementPage />} />
             <Route path="/stagiaires" element={<StagiairesPage />} />
             <Route path="/chambres" element={<ChambresPage />} />
+            <Route path="/settings" element={<Settings />} />
             <Route path="/stock/zona1" element={<Zona1Page />} />
             <Route path="/stock/zona2" element={<Zona2Page />} />
             <Route path="/stock/zona3" element={<Zona3Page />} />
