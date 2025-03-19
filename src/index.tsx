@@ -39,7 +39,7 @@ root.render(
           <Route path="/" element={<SignInPage />} />
 
           {/* Protected Routes */}
-          <Route element={<ProtectedRoute />}>
+          {/* <Route element={<ProtectedRoute />}> */}
             <Route path="/dashboard" element={<DashboardPage />} />
             <Route path="/reclamation" element={<ReclamationPage />} />
             <Route path="/products" element={<EcommerceProductsPage />} />
@@ -55,7 +55,7 @@ root.render(
             <Route path="/stock/zona2" element={<Zona2Page />} />
             <Route path="/stock/zona3" element={<Zona3Page />} />
             <Route path="/stock/zona4" element={<Zona4Page />} />
-          </Route>
+          {/* </Route> */}
         </Routes>
       </BrowserRouter>
     </Flowbite>

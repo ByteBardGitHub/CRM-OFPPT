@@ -49,7 +49,7 @@ const ExampleSidebar: FC = function () {
               <Sidebar.Item as={Link} to="/dashboard" icon={HiChartPie} className={currentPage === "/dashboard" ? "bg-gray-100 dark:bg-gray-700" : ""}>
                 Dashboard
               </Sidebar.Item>
-              <Sidebar.Item as={Link} to="products" icon={HiShoppingBag} className={currentPage === "/e-commerce/products" ? "bg-gray-100 dark:bg-gray-700" : ""}>
+              <Sidebar.Item as={Link} to="/products" icon={HiShoppingBag} className={currentPage === "products" ? "bg-gray-100 dark:bg-gray-700" : ""}>
                 Products
               </Sidebar.Item>
              

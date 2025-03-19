@@ -1,787 +1,744 @@
-import React, { useState } from "react";
-import { 
-  Button, 
-  Table, 
-  TextInput, 
-  Label, 
-  Card, 
-  Dropdown, 
-  Badge, 
-  Textarea, 
-  Select 
+
+import {
+  Breadcrumb,
+  Button,
+  Checkbox,
+  Label,
+  Modal,
+  Table,
+  Textarea,
+  TextInput,
 } from "flowbite-react";
-import { 
-  HiOutlineEye, 
-  HiOutlinePencil, 
-  HiOutlineTrash, 
-  HiOutlinePlus, 
-  HiOutlineDownload, 
-  HiOutlineShare, 
-  HiOutlineFilter, 
-  HiOutlineArrowLeft, 
-  HiOutlineSave, 
-  HiDotsVertical 
+import type { FC } from "react";
+import { useState } from "react";
+import { FaPlus } from "react-icons/fa";
+import {
+  HiCog,
+  HiDotsVertical,
+  HiExclamationCircle,
+  HiHome,
+  HiOutlineExclamationCircle,
+  HiPencilAlt,
+  HiTrash,
+  HiUpload,
 } from "react-icons/hi";
+import NavbarSidebarLayout from "../layouts/navbar-sidebar";
+import { } from "flowbite-react";
+import { useEffect } from "react";
+import axios from 'axios';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
-// Define types for our data
-interface AcademicRecord {
-  subject: string;
-  grade: string;
-}
 
-interface Student {
-  id: number;
-  name: string;
-  phone: string;
-  email: string;
-  points: number;
-  status: string;
-  dateApplied: string;
-  address: string;
-  birthDate: string;
-  parentName: string;
-  parentPhone: string;
-  previousSchool: string;
-  academicRecords: AcademicRecord[];
-}
 
-// Sample data - in a real application, this would come from a database
-const initialStudents: Student[] = [
-  {
-    id: 1,
-    name: "Ahmed Benali",
-    phone: "+212 612345678",
-    email: "ahmed.benali@example.com",
-    points: 85,
-    status: "approved",
-    dateApplied: "16 Mar 2025",
-    address: "123 Rue Mohammed V, Casablanca",
-    birthDate: "15 Apr 2007",
-    parentName: "Karim Benali",
-    parentPhone: "+212 612345679",
-    previousSchool: "Lycée Al Khawarizmi",
-    academicRecords: [
-      { subject: "Mathematics", grade: "A" },
-      { subject: "Physics", grade: "B+" },
-      { subject: "French", grade: "A-" },
-      { subject: "Arabic", grade: "A" },
-      { subject: "History", grade: "B" },
-    ],
-  },
-  {
-    id: 2,
-    name: "Fatima Zahra",
-    phone: "+212 623456789",
-    email: "fatima.zahra@example.com",
-    points: 78,
-    status: "approved",
-    dateApplied: "14 Mar 2025",
-    address: "45 Avenue Hassan II, Rabat",
-    birthDate: "22 Jun 2007",
-    parentName: "Nadia Zahra",
-    parentPhone: "+212 623456780",
-    previousSchool: "Collège Ibn Sina",
-    academicRecords: [
-      { subject: "Mathematics", grade: "B+" },
-      { subject: "Physics", grade: "A-" },
-      { subject: "French", grade: "B" },
-      { subject: "Arabic", grade: "A" },
-      { subject: "History", grade: "B+" },
-    ],
-  },
-  {
-    id: 3,
-    name: "Youssef Amrani",
-    phone: "+212 634567890",
-    email: "youssef.amrani@example.com",
-    points: 72,
-    status: "approved",
-    dateApplied: "14 Mar 2025",
-    address: "78 Rue Ibn Battouta, Marrakech",
-    birthDate: "10 Sep 2007",
-    parentName: "Hassan Amrani",
-    parentPhone: "+212 634567891",
-    previousSchool: "École Al Fath",
-    academicRecords: [
-      { subject: "Mathematics", grade: "B" },
-      { subject: "Physics", grade: "B" },
-      { subject: "French", grade: "A" },
-      { subject: "Arabic", grade: "B+" },
-      { subject: "History", grade: "A-" },
-    ],
-  },
-  {
-    id: 4,
-    name: "Laila Tazi",
-    phone: "+212 645678901",
-    email: "laila.tazi@example.com",
-    points: 68,
-    status: "waiting",
-    dateApplied: "13 Mar 2025",
-    address: "12 Avenue Mohammed VI, Tanger",
-    birthDate: "05 Mar 2008",
-    parentName: "Rachid Tazi",
-    parentPhone: "+212 645678902",
-    previousSchool: "Collège Al Massira",
-    academicRecords: [
-      { subject: "Mathematics", grade: "B-" },
-      { subject: "Physics", grade: "C+" },
-      { subject: "French", grade: "B+" },
-      { subject: "Arabic", grade: "B" },
-      { subject: "History", grade: "A" },
-    ],
-  },
-  {
-    id: 5,
-    name: "Omar Alaoui",
-    phone: "+212 656789012",
-    email: "omar.alaoui@example.com",
-    points: 65,
-    status: "waiting",
-    dateApplied: "12 Mar 2025",
-    address: "56 Rue Allal Ben Abdellah, Fès",
-    birthDate: "18 Nov 2007",
-    parentName: "Samira Alaoui",
-    parentPhone: "+212 656789013",
-    previousSchool: "École Al Andalous",
-    academicRecords: [
-      { subject: "Mathematics", grade: "C+" },
-      { subject: "Physics", grade: "B-" },
-      { subject: "French", grade: "B" },
-      { subject: "Arabic", grade: "B+" },
-      { subject: "History", grade: "B" },
-    ],
-  },
-  {
-    id: 6,
-    name: "Nadia Mansouri",
-    phone: "+212 667890123",
-    email: "nadia.mansouri@example.com",
-    points: 62,
-    status: "waiting",
-    dateApplied: "11 Mar 2025",
-    address: "34 Boulevard Zerktouni, Casablanca",
-    birthDate: "27 Jan 2008",
-    parentName: "Mohammed Mansouri",
-    parentPhone: "+212 667890124",
-    previousSchool: "Collège Ibn Khaldoun",
-    academicRecords: [
-      { subject: "Mathematics", grade: "C" },
-      { subject: "Physics", grade: "C+" },
-      { subject: "French", grade: "B+" },
-      { subject: "Arabic", grade: "B" },
-      { subject: "History", grade: "B-" },
-    ],
-  },
-];
-
-const Inscription: React.FC = () => {
-  // State for managing views and data
-  const [view, setView] = useState<'list' | 'details' | 'edit'>('list');
-  const [students, setStudents] = useState<Student[]>(initialStudents);
-  const [currentStudent, setCurrentStudent] = useState<Student | null>(null);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [statusFilter, setStatusFilter] = useState('all');
-  const [selectedStudents, setSelectedStudents] = useState<number[]>([]);
-  const [allSelected, setAllSelected] = useState(false);
-
-  // Filter students based on search term and status filter
-  const filteredStudents = students.filter(student => {
-    const matchesSearch = student.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
-                          student.phone.includes(searchTerm);
-    const matchesStatus = statusFilter === 'all' || student.status === statusFilter;
-    return matchesSearch && matchesStatus;
-  });
-
-  // Handle view student details
-  const handleViewDetails = (student: Student) => {
-    setCurrentStudent(student);
-    setView('details');
-  };
-
-  // Handle edit student
-  const handleEdit = (student: Student) => {
-    setCurrentStudent({...student});
-    setView('edit');
-  };
-
-  // Handle delete student
-  const handleDelete = (id: number) => {
-    if (window.confirm('Are you sure you want to delete this student?')) {
-      setStudents(students.filter(student => student.id !== id));
-    }
-  };
-
-  // Handle form input changes
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    if (!currentStudent) return;
-    
-    const { name, value } = e.target;
-    setCurrentStudent(prev => {
-      if (!prev) return prev;
-      return { ...prev, [name]: value };
-    });
-  };
-
-  // Handle status change in dropdown
-  const handleStatusChange = (value: string) => {
-    if (!currentStudent) return;
-    setCurrentStudent(prev => {
-      if (!prev) return prev;
-      return { ...prev, status: value };
-    });
-  };
-
-  // Handle points change (ensure it's a number)
-  const handlePointsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!currentStudent) return;
-    
-    const value = parseInt(e.target.value) || 0;
-    setCurrentStudent(prev => {
-      if (!prev) return prev;
-      return { ...prev, points: value };
-    });
-  };
-
-  // Handle save changes
-  const handleSaveChanges = () => {
-    if (!currentStudent) return;
-    
-    setStudents(prev => 
-      prev.map(student => 
-        student.id === currentStudent.id ? currentStudent : student
-      )
-    );
-    setView('details');
-  };
-
-  // Handle checkbox selection
-  const handleSelectStudent = (id: number) => {
-    if (selectedStudents.includes(id)) {
-      setSelectedStudents(selectedStudents.filter(studentId => studentId !== id));
-    } else {
-      setSelectedStudents([...selectedStudents, id]);
-    }
-  };
-
-  // Handle select all checkbox
-  const handleSelectAll = () => {
-    if (allSelected) {
-      setSelectedStudents([]);
-    } else {
-      setSelectedStudents(filteredStudents.map(student => student.id));
-    }
-    setAllSelected(!allSelected);
-  };
-
-  // Handle bulk actions
-  const handleBulkAction = (action: string) => {
-    if (action === 'approve' || action === 'waiting') {
-      setStudents(prev => 
-        prev.map(student => 
-          selectedStudents.includes(student.id) 
-            ? { ...student, status: action === 'approve' ? 'approved' : 'waiting' } 
-            : student
-        )
-      );
-    } else if (action === 'delete') {
-      if (window.confirm(`Are you sure you want to delete ${selectedStudents.length} students?`)) {
-        setStudents(prev => 
-          prev.filter(student => !selectedStudents.includes(student.id))
-        );
-      }
-    }
-    setSelectedStudents([]);
-    setAllSelected(false);
-  };
-
-  // Render badge based on status
-  const renderStatusBadge = (status: string) => {
-    const isApproved = status === 'approved';
-    return (
-      <Badge color={isApproved ? "success" : "warning"}>
-        {isApproved ? 'Approved' : 'Waiting'}
-      </Badge>
-    );
-  };
-
-  // List View
-  const renderListView = () => (
-    <div className="container mx-auto py-6">
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <h1 className="text-2xl font-bold">Student Pre-Inscription List</h1>
-          <p className="text-gray-500">Manage boarding school applications and student status.</p>
-        </div>
-        <div className="flex gap-2">
-          <Button color="light" size="sm">
-            <HiOutlineShare className="mr-2 h-4 w-4" />
-            Share
-          </Button>
-          <Button color="light" size="sm">
-            <HiOutlineDownload className="mr-2 h-4 w-4" />
-            Export
-          </Button>
-          <Button size="sm">
-            <HiOutlinePlus className="mr-2 h-4 w-4" />
-            New Student
-          </Button>
+const Inscription: FC = function () {
+  return (
+    <NavbarSidebarLayout isFooter={false}>
+      <div className="block items-center justify-between border-b border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-800 sm:flex">
+        <div className="mb-1 w-full">
+          <div className="mb-4">
+            <Breadcrumb className="mb-4">
+              <Breadcrumb.Item href="#">
+                <div className="flex items-center gap-x-3">
+                  <HiHome className="text-xl" />
+                  <span className="dark:text-white">Home</span>
+                </div>
+              </Breadcrumb.Item>
+        
+              <Breadcrumb.Item>Inscriptions</Breadcrumb.Item>
+            </Breadcrumb>
+            <h1 className="text-xl font-semibold text-gray-900 dark:text-white sm:text-2xl">
+              All Inscriptions
+            </h1>
+          </div>
+          <div className="block items-center sm:flex">
+            <SearchForInscription />
+            <div className="flex w-full items-center sm:justify-end">
+              <AddInscriptionModal />
+            </div>
+          </div>
         </div>
       </div>
-
-      <div className="flex items-center gap-4 mb-6">
-        <div className="relative flex-1">
-          <TextInput
-            placeholder="Search students..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            icon={HiOutlineFilter}
-          />
+      <div className="flex flex-col">
+        <div className="overflow-x-auto">
+          <div className="inline-block min-w-full align-middle">
+            <div className="overflow-hidden shadow">
+              <InscriptionsTable />
+            </div>
+          </div>
         </div>
-        <Select
-          id="status-filter"
-          value={statusFilter}
-          onChange={(e) => setStatusFilter(e.target.value)}
-        >
-          <option value="all">All</option>
-          <option value="approved">Approved</option>
-          <option value="waiting">Waiting</option>
-        </Select>
       </div>
-
-      <div className="bg-white rounded-md border shadow-sm">
-        <div className="p-4 border-b flex items-center gap-2">
-          <Select
-            id="bulk-action"
-            onChange={(e) => handleBulkAction(e.target.value)}
-          >
-            <option value="none">Bulk Action</option>
-            <option value="approve">Approve Selected</option>
-            <option value="waiting">Set to Waiting</option>
-            <option value="delete">Delete Selected</option>
-          </Select>
-          <Button color="light" size="sm">
-            Apply
-          </Button>
-        </div>
-
-        <Table>
-          <Table.Head>
-            <Table.HeadCell className="w-4">
-              <input 
-                type="checkbox" 
-                className="rounded border-gray-300"
-                checked={allSelected}
-                onChange={handleSelectAll}
-              />
-            </Table.HeadCell>
-            <Table.HeadCell>Name</Table.HeadCell>
-            <Table.HeadCell>Phone Number</Table.HeadCell>
-            <Table.HeadCell>Points</Table.HeadCell>
-            <Table.HeadCell>Date Applied</Table.HeadCell>
-            <Table.HeadCell>Status</Table.HeadCell>
-            <Table.HeadCell>
-              <span className="sr-only">Actions</span>
-            </Table.HeadCell>
-          </Table.Head>
-          <Table.Body className="divide-y">
-            {filteredStudents.map((student) => (
-              <Table.Row key={student.id} className="bg-white">
-                <Table.Cell>
-                  <input 
-                    type="checkbox" 
-                    className="rounded border-gray-300"
-                    checked={selectedStudents.includes(student.id)}
-                    onChange={() => handleSelectStudent(student.id)}
-                  />
-                </Table.Cell>
-                <Table.Cell className="font-medium">{student.name}</Table.Cell>
-                <Table.Cell>{student.phone}</Table.Cell>
-                <Table.Cell>{student.points}</Table.Cell>
-                <Table.Cell>{student.dateApplied}</Table.Cell>
-                <Table.Cell>
-                  {renderStatusBadge(student.status)}
-                </Table.Cell>
-                <Table.Cell>
-                  <div className="flex justify-end gap-2">
-                    <Button 
-                      color="light" 
-                      size="xs" 
-                      title="View Details"
-                      onClick={() => handleViewDetails(student)}
-                    >
-                      <HiOutlineEye className="h-4 w-4" />
-                    </Button>
-                    <Dropdown
-                      label={<HiDotsVertical className="h-4 w-4" />}
-                      arrowIcon={false}
-                      color="light"
-                      size="xs"
-                    >
-                      <Dropdown.Item onClick={() => handleViewDetails(student)}>
-                        <HiOutlineEye className="h-4 w-4 mr-2" />
-                        View Details
-                      </Dropdown.Item>
-                      <Dropdown.Item onClick={() => handleEdit(student)}>
-                        <HiOutlinePencil className="h-4 w-4 mr-2" />
-                        Edit
-                      </Dropdown.Item>
-                      <Dropdown.Divider />
-                      <Dropdown.Item onClick={() => handleDelete(student.id)}>
-                        <HiOutlineTrash className="h-4 w-4 mr-2 text-red-500" />
-                        <span className="text-red-500">Delete</span>
-                      </Dropdown.Item>
-                    </Dropdown>
-                  </div>
-                </Table.Cell>
-              </Table.Row>
-            ))}
-          </Table.Body>
-        </Table>
-      </div>
-    </div>
+    
+    </NavbarSidebarLayout>
   );
+};
 
-  // Details View
-  const renderDetailsView = () => {
-    if (!currentStudent) return null;
-    
-    return (
-      <div className="container mx-auto py-6">
-        <div className="mb-6">
-          <Button 
-            color="light" 
-            className="flex items-center text-sm text-gray-500 hover:text-gray-900 p-0"
-            onClick={() => setView('list')}
-          >
-            <HiOutlineArrowLeft className="mr-2 h-4 w-4" />
-            Back to list
-          </Button>
-        </div>
-        
-        <div className="flex items-center justify-between mb-6">
-          <div>
-            <h1 className="text-2xl font-bold">Student Details</h1>
-            <p className="text-gray-500">Complete information about the student application</p>
-          </div>
-          <div className="flex gap-2">
-            <Button 
-              color="light"
-              onClick={() => handleEdit(currentStudent)}
-            >
-              <HiOutlinePencil className="h-4 w-4 mr-2" />
-              Edit
-            </Button>
-            <Button 
-              color="failure"
-              onClick={() => {
-                handleDelete(currentStudent.id);
-                setView('list');
-              }}
-            >
-              <HiOutlineTrash className="h-4 w-4 mr-2" />
-              Delete
-            </Button>
-          </div>
-        </div>
-        
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <Card className="md:col-span-2">
-            <Card.Header>
-              <h5 className="text-xl font-bold">Personal Information</h5>
-              <p className="text-sm text-gray-500">Student's personal and contact details</p>
-            </Card.Header>
-            <Card.Body className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <p className="text-sm font-medium text-gray-500">Full Name</p>
-                  <p>{currentStudent.name}</p>
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-gray-500">Date of Birth</p>
-                  <p>{currentStudent.birthDate}</p>
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-gray-500">Phone Number</p>
-                  <p>{currentStudent.phone}</p>
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-gray-500">Email Address</p>
-                  <p>{currentStudent.email}</p>
-                </div>
-                <div className="md:col-span-2">
-                  <p className="text-sm font-medium text-gray-500">Address</p>
-                  <p>{currentStudent.address}</p>
-                </div>
-              </div>
-            </Card.Body>
-          </Card>
-          
-          <Card>
-            <Card.Header>
-              <h5 className="text-xl font-bold">Application Status</h5>
-              <p className="text-sm text-gray-500">Current status and points</p>
-            </Card.Header>
-            <Card.Body className="space-y-4">
-              <div>
-                <p className="text-sm font-medium text-gray-500">Status</p>
-                {renderStatusBadge(currentStudent.status)}
-              </div>
-              <div>
-                <p className="text-sm font-medium text-gray-500">Total Points</p>
-                <p className="text-2xl font-bold">{currentStudent.points}</p>
-              </div>
-              <div>
-                <p className="text-sm font-medium text-gray-500">Date Applied</p>
-                <p>{currentStudent.dateApplied}</p>
-              </div>
-            </Card.Body>
-          </Card>
-          
-          <Card className="md:col-span-2">
-            <Card.Header>
-              <h5 className="text-xl font-bold">Academic Records</h5>
-              <p className="text-sm text-gray-500">Previous academic performance</p>
-            </Card.Header>
-            <Card.Body>
-              <div>
-                <p className="text-sm font-medium text-gray-500 mb-2">Previous School</p>
-                <p className="mb-4">{currentStudent.previousSchool}</p>
-              </div>
-              <div className="border rounded-md">
-                <div className="grid grid-cols-2 font-medium p-3 border-b bg-gray-50">
-                  <div>Subject</div>
-                  <div>Grade</div>
-                </div>
-                {currentStudent.academicRecords.map((record, index) => (
-                  <div key={index} className="grid grid-cols-2 p-3 border-b last:border-0">
-                    <div>{record.subject}</div>
-                    <div>{record.grade}</div>
-                  </div>
-                ))}
-              </div>
-            </Card.Body>
-          </Card>
-          
-          <Card>
-            <Card.Header>
-              <h5 className="text-xl font-bold">Parent/Guardian</h5>
-              <p className="text-sm text-gray-500">Contact information</p>
-            </Card.Header>
-            <Card.Body className="space-y-4">
-              <div>
-                <p className="text-sm font-medium text-gray-500">Name</p>
-                <p>{currentStudent.parentName}</p>
-              </div>
-              <div>
-                <p className="text-sm font-medium text-gray-500">Phone Number</p>
-                <p>{currentStudent.parentPhone}</p>
-              </div>
-            </Card.Body>
-          </Card>
-        </div>
+const SearchForInscription: FC = function () {
+  return (
+    <form className="mb-4 sm:mb-0 sm:pr-3" action="#" method="GET">
+      <Label htmlFor="Inscriptions-search" className="sr-only">
+        Search
+      </Label>
+      <div className="relative mt-1 lg:w-64 xl:w-96">
+        <TextInput
+          id="Inscriptions-search"
+          name="Inscriptions-search"
+          placeholder="Search for Inscriptions"
+        />
       </div>
-    );
+    </form>
+  );
+};
+
+const AddInscriptionModal: FC = function () {
+  const [isOpen, setOpen] = useState(false);
+  const [name, setName] = useState('');
+  const [phone, setPhone] = useState('');
+  const [email, setEmail] = useState('');
+  const [address, setAddress] = useState('');
+  const [birthDate, setBirthDate] = useState('');
+  
+  const [distance, setDistance] = useState(0);
+
+  const [familyCriteria, setFamilyCriteria] = useState<string>('');
+  const [schoolCriteria, setSchoolCriteria] = useState<string>('');
+  const [socialCriteria, setSocialCriteria] = useState<string>('');
+  const [physicalCriteria, setPhysicalCriteria] = useState<string>('');
+
+  const [totalPoints, setTotalPoints] = useState<number>(0);
+
+  const criteriaOptions = {
+    "Critère familial": [
+      { case: "Les parents sont vivants", points: 0 },
+      { case: "Parents divorcés", points: 10 },
+      { case: "Sa mère ou son père est mort", points: 10 }
+    ],
+    "Critère scolaire": [
+      { case: "Niveau", points: 20 },
+      { case: "Niveau technicien", points: 15 },
+      { case: "Technicien", points: 10 },
+      { case: "Technicien spécialisé", points: 5 }
+    ],
+    "Critère social": [
+      { case: "Dispose d'une couverture santé", points: 0 },
+      { case: "Il n'est pas obligé de le lui donner", points: 10 }
+    ],
+    "Critère physique": [
+      { case: "Handicapé", points: 10 },
+      { case: "Ne pas handicapé", points: 0 }
+    ]
   };
 
-  // Edit View
-  const renderEditView = () => {
-    if (!currentStudent) return null;
-    
-    return (
-      <div className="container mx-auto py-6">
-        <div className="mb-6">
-          <Button 
-            color="light" 
-            className="flex items-center text-sm text-gray-500 hover:text-gray-900 p-0"
-            onClick={() => setView('details')}
-          >
-            <HiOutlineArrowLeft className="mr-2 h-4 w-4" />
-            Back to details
-          </Button>
-        </div>
-        
-        <div className="mb-6">
-          <h1 className="text-2xl font-bold">Edit Student</h1>
-          <p className="text-gray-500">Update student information and application status</p>
-        </div>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <Card>
-            <Card.Header>
-              <h5 className="text-xl font-bold">Personal Information</h5>
-              <p className="text-sm text-gray-500">Update student's personal details</p>
-            </Card.Header>
-            <Card.Body className="space-y-4">
-              <div>
-                <div className="mb-2 block">
-                  <Label htmlFor="name" value="Full Name" />
-                </div>
-                <TextInput 
-                  id="name" 
-                  name="name" 
-                  value={currentStudent.name} 
-                  onChange={handleChange} 
-                  required 
-                />
-              </div>
-              <div>
-                <div className="mb-2 block">
-                  <Label htmlFor="birthDate" value="Date of Birth" />
-                </div>
-                <TextInput 
-                  id="birthDate" 
-                  name="birthDate" 
-                  value={currentStudent.birthDate} 
-                  onChange={handleChange} 
-                  required 
-                />
-              </div>
-              <div>
-                <div className="mb-2 block">
-                  <Label htmlFor="phone" value="Phone Number" />
-                </div>
-                <TextInput 
-                  id="phone" 
-                  name="phone" 
-                  value={currentStudent.phone} 
-                  onChange={handleChange} 
-                  required 
-                />
-              </div>
-              <div>
-                <div className="mb-2 block">
-                  <Label htmlFor="email" value="Email Address" />
-                </div>
-                <TextInput 
-                  id="email" 
-                  name="email" 
-                  type="email" 
-                  value={currentStudent.email} 
-                  onChange={handleChange} 
-                  required 
-                />
-              </div>
-              <div>
-                <div className="mb-2 block">
-                  <Label htmlFor="address" value="Address" />
-                </div>
-                <Textarea 
-                  id="address" 
-                  name="address" 
-                  value={currentStudent.address} 
-                  onChange={handleChange} 
-                  rows={3} 
-                  required 
-                />
-              </div>
-            </Card.Body>
-          </Card>
-          
-          <div className="space-y-6">
-            <Card>
-              <Card.Header>
-                <h5 className="text-xl font-bold">Application Details</h5>
-                <p className="text-sm text-gray-500">Update application status and points</p>
-              </Card.Header>
-              <Card.Body className="space-y-4">
-                <div>
-                  <div className="mb-2 block">
-                    <Label htmlFor="status" value="Status" />
-                  </div>
-                  <Select 
-                    id="status" 
-                    value={currentStudent.status} 
-                    onChange={(e) => handleStatusChange(e.target.value)}
-                  >
-                    <option value="approved">Approved</option>
-                    <option value="waiting">Waiting</option>
-                  </Select>
-                </div>
-                <div>
-                  <div className="mb-2 block">
-                    <Label htmlFor="points" value="Total Points" />
-                  </div>
-                  <TextInput 
-                    id="points" 
-                    name="points" 
-                    type="number" 
-                    value={currentStudent.points.toString()} 
-                    onChange={handlePointsChange} 
-                    required 
-                  />
-                </div>
-                <div>
-                  <div className="mb-2 block">
-                    <Label htmlFor="previousSchool" value="Previous School" />
-                  </div>
-                  <TextInput 
-                    id="previousSchool" 
-                    name="previousSchool" 
-                    value={currentStudent.previousSchool} 
-                    onChange={handleChange} 
-                    required 
-                  />
-                </div>
-              </Card.Body>
-            </Card>
-            
-            <Card>
-              <Card.Header>
-                <h5 className="text-xl font-bold">Parent/Guardian Information</h5>
-                <p className="text-sm text-gray-500">Update parent contact details</p>
-              </Card.Header>
-              <Card.Body className="space-y-4">
-                <div>
-                  <div className="mb-2 block">
-                    <Label htmlFor="parentName" value="Parent Name" />
-                  </div>
-                  <TextInput 
-                    id="parentName" 
-                    name="parentName" 
-                    value={currentStudent.parentName} 
-                    onChange={handleChange} 
-                    required 
-                  />
-                </div>
-                <div>
-                  <div className="mb-2 block">
-                    <Label htmlFor="parentPhone" value="Parent Phone" />
-                  </div>
-                  <TextInput 
-                    id="parentPhone" 
-                    name="parentPhone" 
-                    value={currentStudent.parentPhone} 
-                    onChange={handleChange} 
-                    required 
-                  />
-                </div>
-              </Card.Body>
-            </Card>
-          </div>
-        </div>
-        
-        <div className="mt-6 flex justify-end">
-          <Button 
-            type="button" 
-            className="w-full md:w-auto"
-            onClick={handleSaveChanges}
-          >
-            <HiOutlineSave className="h-4 w-4 mr-2" />
-            Save Changes
-          </Button>
-        </div>
-      </div>
-    );
+  // Calculate points automatically when any criteria is selected
+  useEffect(() => {
+    const calculatePoints = () => {
+      let points = 0;
+      if (familyCriteria) points += criteriaOptions["Critère familial"].find(option => option.case === familyCriteria)?.points || 0;
+      if (schoolCriteria) points += criteriaOptions["Critère scolaire"].find(option => option.case === schoolCriteria)?.points || 0;
+      if (socialCriteria) points += criteriaOptions["Critère social"].find(option => option.case === socialCriteria)?.points || 0;
+      if (physicalCriteria) points += criteriaOptions["Critère physique"].find(option => option.case === physicalCriteria)?.points || 0;
+
+      setTotalPoints(points);
+    };
+
+    calculatePoints();
+  }, [familyCriteria, schoolCriteria, socialCriteria, physicalCriteria]);
+
+  const handleSubmit = async () => {
+    const token = localStorage.getItem('authToken');
+    if (!token) {
+      console.error("No auth token found");
+      return;
+    }
+
+    const newInscription = {
+      name,
+      phone,
+      email,
+      address,
+      birthDate,
+      familyCriteria,
+      schoolCriteria,
+      socialCriteria,
+      physicalCriteria,
+      distance,
+      totalPoints // Send the calculated points here
+    };
+
+    try {
+      const response = await axios.post('http://localhost:3002/api/inscriptions/', newInscription, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      console.log('Inscription created successfully:', response.data);
+
+      // Show success notification
+      toast.success("Inscription ajoutée avec succès!", {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+
+      setOpen(false); // Close the modal
+    } catch (error) {
+      console.error('Error creating inscription:', error);
+
+      // Show error notification
+      toast.error("Erreur lors de l'ajout de l'inscription. Essayez à nouveau.", {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+    }
   };
 
-  // Render the appropriate view based on state
   return (
     <>
-      {view === 'list' && renderListView()}
-      {view === 'details' && renderDetailsView()}
-      {view === 'edit' && renderEditView()}
+      <Button color="primary" onClick={() => setOpen(!isOpen)}>
+        <FaPlus className="mr-3 text-sm" />
+        Ajouter une inscription
+      </Button>
+      <Modal onClose={() => setOpen(false)} show={isOpen}>
+        <Modal.Header className="border-b border-gray-200 !p-6 dark:border-gray-700">
+          <strong>Ajouter une inscription</strong>
+        </Modal.Header>
+        <Modal.Body>
+          <form>
+            <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+              <div>
+                <Label htmlFor="name">Nom du stagiaire</Label>
+                <TextInput
+                  id="name"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder="John Doe"
+                  className="mt-1"
+                />
+              </div>
+              <div>
+                <Label htmlFor="phone">Téléphone</Label>
+                <TextInput
+                  id="phone"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  placeholder="555123456"
+                  className="mt-1"
+                />
+              </div>
+              <div>
+                <Label htmlFor="email">Email</Label>
+                <TextInput
+                  id="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="johndoe@example.com"
+                  className="mt-1"
+                />
+              </div>
+              <div>
+                <Label htmlFor="address">Adresse</Label>
+                <TextInput
+                  id="address"
+                  value={address}
+                  onChange={(e) => setAddress(e.target.value)}
+                  placeholder="789 Maple Street"
+                  className="mt-1"
+                />
+              </div>
+              <div>
+                <Label htmlFor="birthDate">Date de naissance</Label>
+                <TextInput
+                  id="birthDate"
+                  value={birthDate}
+                  onChange={(e) => setBirthDate(e.target.value)}
+                  placeholder="2005-12-15"
+                  className="mt-1"
+                />
+              </div>
+              <div>
+                <Label htmlFor="distance">Distance</Label>
+                <TextInput
+                  id="distance"
+                  value={distance}
+                  onChange={(e) => setDistance(Number(e.target.value))}
+                  type="number"
+                  placeholder="60"
+                  className="mt-1"
+                />
+              </div>
+
+              {/* Family Criteria */}
+              <div>
+                <Label>Critère familial</Label>
+                <select
+                  value={familyCriteria}
+                  onChange={(e) => setFamilyCriteria(e.target.value)}
+                  className="mt-1 block w-full"
+                >
+                  <option value="">Sélectionnez un critère familial</option>
+                  {criteriaOptions["Critère familial"].map((option) => (
+                    <option key={option.case} value={option.case}>
+                      {option.case}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* School Criteria */}
+              <div>
+                <Label>Critère scolaire</Label>
+                <select
+                  value={schoolCriteria}
+                  onChange={(e) => setSchoolCriteria(e.target.value)}
+                  className="mt-1 block w-full"
+                >
+                  <option value="">Sélectionnez un critère scolaire</option>
+                  {criteriaOptions["Critère scolaire"].map((option) => (
+                    <option key={option.case} value={option.case}>
+                      {option.case}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Social Criteria */}
+              <div>
+                <Label>Critère social</Label>
+                <select
+                  value={socialCriteria}
+                  onChange={(e) => setSocialCriteria(e.target.value)}
+                  className="mt-1 block w-full"
+                >
+                  <option value="">Sélectionnez un critère social</option>
+                  {criteriaOptions["Critère social"].map((option) => (
+                    <option key={option.case} value={option.case}>
+                      {option.case}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Physical Criteria */}
+              <div>
+                <Label>Critère physique</Label>
+                <select
+                  value={physicalCriteria}
+                  onChange={(e) => setPhysicalCriteria(e.target.value)}
+                  className="mt-1 block w-full"
+                >
+                  <option value="">Sélectionnez un critère physique</option>
+                  {criteriaOptions["Critère physique"].map((option) => (
+                    <option key={option.case} value={option.case}>
+                      {option.case}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Display calculated points */}
+              <div>
+                <Label>Points totaux</Label>
+                <div className="text-xl font-semibold">{totalPoints}</div>
+              </div>
+            </div>
+          </form>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button color="primary" onClick={handleSubmit}>
+            Ajouter l'inscription
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
+      {/* Toast Notifications Container */}
+      <ToastContainer />
     </>
+  );
+};
+
+
+const EditInscriptionModal: FC<{ inscriptionId: string }> = ({ inscriptionId }) => {
+  const [isOpen, setOpen] = useState(false);
+  const [formData, setFormData] = useState({
+    name: '',
+    phone: '',
+    email: '',
+    address: '',
+    birthDate: '',
+    criteriaPoints: {} as Record<string, number>,
+    distance: '',
+    status: '',
+  });
+
+  useEffect(() => {
+    const fetchInscription = async () => {
+      try {
+        const token = localStorage.getItem('authToken'); // Get token
+
+        const response = await axios.get(`http://localhost:3002/api/inscriptions/${inscriptionId}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        setFormData(response.data);
+      } catch (err) {
+        console.error('Error fetching inscription data:', err);
+      }
+    };
+
+    if (inscriptionId) {
+      fetchInscription();
+    }
+  }, [inscriptionId]);
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
+
+  const handleCriteriaPointsChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const { value } = e.target;
+    try {
+      const parsedCriteriaPoints = value ? JSON.parse(value) : {};
+      // Validate if the parsedCriteriaPoints is an object
+      if (typeof parsedCriteriaPoints === "object" && parsedCriteriaPoints !== null) {
+        setFormData((prevData) => ({
+          ...prevData,
+          criteriaPoints: parsedCriteriaPoints,
+        }));
+      } else {
+        console.error('Invalid criteriaPoints format');
+      }
+    } catch (err) {
+      console.error('Invalid criteriaPoints format:', err);
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    try {
+      const token = localStorage.getItem('authToken');
+
+    const updatedData = {
+    ...formData,
+    distance: parseFloat(formData.distance),  // Ensure it's a number
+    criteriaPoints: typeof formData.criteriaPoints === "string"
+        ? JSON.parse(formData.criteriaPoints)
+        : formData.criteriaPoints,
+    };
+      // Ensure points is calculated based on criteriaPoints
+      updatedData.points = Object.values(updatedData.criteriaPoints).reduce((total, points) => total + points, 0);
+
+      console.log('Sending PUT request with:', updatedData);
+
+      const response = await axios.put(
+        `http://localhost:3002/api/inscriptions/${inscriptionId}`,
+        updatedData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+
+      console.log('Updated inscription:', response.data);
+      setOpen(false);
+    } catch (err) {
+      console.error('Error updating inscription:', err);
+    }
+  };
+
+  return (
+    <>
+      <Button color="primary" onClick={() => setOpen(true)}>
+        <HiPencilAlt className="mr-2 text-lg" />
+        Edit item
+      </Button>
+
+      <Modal onClose={() => setOpen(false)} show={isOpen}>
+        <Modal.Header className="border-b border-gray-200 !p-6 dark:border-gray-700">
+          <strong>Edit Inscription</strong>
+        </Modal.Header>
+
+        <Modal.Body>
+          <form onSubmit={handleSubmit}>
+            <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+              <div>
+                <Label htmlFor="name">Inscription name</Label>
+                <TextInput
+                  id="name"
+                  name="name"
+                  value={formData.name || ''}
+                  onChange={handleInputChange}
+                  placeholder="Apple iMac 27"
+                  className="mt-1"
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="phone">Phone</Label>
+                <TextInput
+                  id="phone"
+                  name="phone"
+                  value={formData.phone || ''}
+                  onChange={handleInputChange}
+                  placeholder="123-456-7890"
+                  className="mt-1"
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="email">Email</Label>
+                <TextInput
+                  id="email"
+                  name="email"
+                  value={formData.email || ''}
+                  onChange={handleInputChange}
+                  placeholder="example@example.com"
+                  className="mt-1"
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="address">Address</Label>
+                <TextInput
+                  id="address"
+                  name="address"
+                  value={formData.address || ''}
+                  onChange={handleInputChange}
+                  placeholder="123 Main St."
+                  className="mt-1"
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="birthDate">Birth Date</Label>
+                <TextInput
+                  id="birthDate"
+                  name="birthDate"
+                  value={formData.birthDate || ''}
+                  onChange={handleInputChange}
+                  placeholder="YYYY-MM-DD"
+                  className="mt-1"
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="criteriaPoints">Criteria Points</Label>
+                <Textarea
+                  id="criteriaPoints"
+                  name="criteriaPoints"
+                  value={JSON.stringify(formData.criteriaPoints) || ''}
+                  onChange={handleCriteriaPointsChange}
+                  placeholder="{'speed': 5, 'accuracy': 8}"
+                  rows={3}
+                  className="mt-1"
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="distance">Distance</Label>
+                <TextInput
+                  id="distance"
+                  name="distance"
+                  value={formData.distance || ''}
+                  onChange={handleInputChange}
+                  placeholder="500m"
+                  className="mt-1"
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="status">Status</Label>
+                <TextInput
+                  id="status"
+                  name="status"
+                  value={formData.status || ''}
+                  onChange={handleInputChange}
+                  placeholder="Active"
+                  className="mt-1"
+                />
+              </div>
+            </div>
+
+            <Modal.Footer>
+              <Button color="primary" type="submit">
+                Save changes
+              </Button>
+            </Modal.Footer>
+          </form>
+        </Modal.Body>
+      </Modal>
+    </>
+  );
+};
+
+
+
+
+const DeleteInscriptionModal: FC<{ inscriptionId: string; onDelete: () => void }> = ({ inscriptionId, onDelete }) => {
+  const [isOpen, setOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  const handleDelete = async () => {
+    const token = localStorage.getItem("authToken");
+
+    if (!token) {
+      console.error("No token found in localStorage");
+      return;
+    }
+
+    try {
+      setLoading(true);
+      await axios.delete(`http://localhost:3002/api/inscriptions/${inscriptionId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      setOpen(false);
+      onDelete(); // Callback pour rafraîchir la liste après suppression
+    } catch (err) {
+      console.error("Error deleting inscription:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <>
+      <Button color="failure" onClick={() => setOpen(true)}>
+        <HiTrash className="mr-2 text-lg" />
+        Delete item
+      </Button>
+
+      <Modal onClose={() => setOpen(false)} show={isOpen} size="md">
+        <Modal.Header className="px-3 pt-3 pb-0">
+          <span className="sr-only">Delete Inscription</span>
+        </Modal.Header>
+        <Modal.Body className="px-6 pb-6 pt-0">
+          <div className="flex flex-col items-center gap-y-6 text-center">
+            <HiOutlineExclamationCircle className="text-7xl text-red-600" />
+            <p className="text-lg text-gray-500 dark:text-gray-300">
+              Are you sure you want to delete this Inscription?
+            </p>
+            <div className="flex items-center gap-x-3">
+              <Button color="failure" onClick={handleDelete} disabled={loading}>
+                {loading ? "Deleting..." : "Yes, I'm sure"}
+              </Button>
+              <Button color="gray" onClick={() => setOpen(false)}>
+                No, cancel
+              </Button>
+            </div>
+          </div>
+        </Modal.Body>
+      </Modal>
+    </>
+  );
+};
+
+
+const InscriptionsTable: React.FC = () => {
+  const [data, setData] = useState<any[]>([]); // Array of inscriptions
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // Fetch data from the API
+  useEffect(() => {
+    const fetchInscriptions = async () => {
+      try {
+        const token = localStorage.getItem("authToken");
+        console.log("Auth Token: ", token); // Ensure this prints a valid token
+
+        if (!token) {
+          throw new Error("No authentication token found");
+        }
+
+        const response = await axios.get("http://localhost:3002/api/inscriptions", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        setData(response.data); // Set the fetched data into state
+      } catch (error: any) {
+        setError("Failed to fetch inscriptions. Please try again.");
+        console.error(error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchInscriptions();
+  }, []);
+
+  // Handle loading state and error message
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>{error}</p>;
+
+  return (
+    <Table className="min-w-full divide-y divide-gray-200 dark:divide-gray-600">
+      <Table.Head className="bg-gray-100 dark:bg-gray-700">
+        <Table.HeadCell>Nom du stagiaire</Table.HeadCell>
+        <Table.HeadCell>Téléphone</Table.HeadCell>
+        <Table.HeadCell>Email</Table.HeadCell>
+        <Table.HeadCell>Adresse</Table.HeadCell>
+        <Table.HeadCell>Points</Table.HeadCell>
+        <Table.HeadCell>Actions</Table.HeadCell>
+      </Table.Head>
+      <Table.Body className="divide-y divide-gray-200 bg-white dark:divide-gray-700 dark:bg-gray-800">
+        {data.map((inscription, index) => (
+          <Table.Row key={index} className="hover:bg-gray-100 dark:hover:bg-gray-700">
+            <Table.Cell className="whitespace-nowrap p-4 text-sm font-normal text-gray-500 dark:text-gray-400">
+              <div className="text-base font-semibold text-gray-900 dark:text-white">
+                {inscription.name}
+              </div>
+              <div className="text-sm font-normal text-gray-500 dark:text-gray-400">
+                {inscription.email}
+              </div>
+            </Table.Cell>
+            <Table.Cell className="whitespace-nowrap p-4 text-base font-medium text-gray-900 dark:text-white">
+              {inscription.phone}
+            </Table.Cell>
+            <Table.Cell className="whitespace-nowrap p-4 text-base font-medium text-gray-900 dark:text-white">
+              {inscription.email}
+            </Table.Cell>
+            <Table.Cell className="whitespace-nowrap p-4 text-base font-medium text-gray-900 dark:text-white">
+              {inscription.address}
+            </Table.Cell>
+            <Table.Cell className="whitespace-nowrap p-4 text-base font-medium text-gray-900 dark:text-white">
+              {/* Ensure `criteriaPoints` exists and is an object before accessing its values */}
+              {inscription.criteriaPoints
+                ? Object.values(inscription.criteriaPoints).reduce(
+                    (acc, points) => acc + points,
+                    0
+                  )
+                : 0}
+            </Table.Cell>
+            <Table.Cell className="space-x-2 whitespace-nowrap p-4">
+              <div className="flex items-center gap-x-3">
+                <EditInscriptionModal inscriptionId={inscription._id} />
+                <DeleteInscriptionModal inscriptionId={inscription._id} />
+              </div>
+            </Table.Cell>
+          </Table.Row>
+        ))}
+      </Table.Body>
+    </Table>
   );
 };
 
