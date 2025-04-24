@@ -1,14 +1,10 @@
-import { Sidebar, TextInput, Button } from "flowbite-react";
+import { Sidebar, TextInput } from "flowbite-react";
 import type { FC } from "react";
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
   HiChartPie,
-  HiClipboard,
-  HiCollection,
-  HiInformationCircle,
   HiSearch,
-  HiShoppingBag,
   HiUsers,
   HiDocumentText,
   HiOfficeBuilding,
@@ -30,10 +26,10 @@ const ExampleSidebar: FC = function () {
   }, []);
 
   const handleSignOut = () => {
-    // Supprimer les informations de session (ex: token)
+    
     localStorage.removeItem("authToken");
 
-    // Rediriger vers la page de connexion
+   
     navigate("/");
   };
 
@@ -49,9 +45,7 @@ const ExampleSidebar: FC = function () {
               <Sidebar.Item as={Link} to="/dashboard" icon={HiChartPie} className={currentPage === "/dashboard" ? "bg-gray-100 dark:bg-gray-700" : ""}>
                 Dashboard
               </Sidebar.Item>
-              <Sidebar.Item as={Link} to="/products" icon={HiShoppingBag} className={currentPage === "products" ? "bg-gray-100 dark:bg-gray-700" : ""}>
-                Products
-              </Sidebar.Item>
+              
              
               <Sidebar.Item as={Link} to="/reclamation" icon={HiDocumentText} className={currentPage === "/reclamation" ? "bg-gray-100 dark:bg-gray-700" : ""}>
                 Reclamation
@@ -73,16 +67,16 @@ const ExampleSidebar: FC = function () {
                   exit={{ opacity: 0, height: 0 }}
                 ></motion.div>
                 <Sidebar.Item as={Link} to="/stock/zona1" className={currentPage === "/stock/zona1" ? "bg-gray-100 dark:bg-gray-700" : ""}>
-                  Zona 1
+                  Economa
                 </Sidebar.Item>
                 <Sidebar.Item as={Link} to="/stock/zona2" className={currentPage === "/stock/zona2" ? "bg-gray-100 dark:bg-gray-700" : ""}>
-                  Zona 2
+                  Fruits
                 </Sidebar.Item>
                 <Sidebar.Item as={Link} to="/stock/zona3" className={currentPage === "/stock/zona3" ? "bg-gray-100 dark:bg-gray-700" : ""}>
-                  Zona 3
+                  Legumes
                 </Sidebar.Item>
                 <Sidebar.Item as={Link} to="/stock/zona4" className={currentPage === "/stock/zona4" ? "bg-gray-100 dark:bg-gray-700" : ""}>
-                  Zona 4
+                  materiels
                 </Sidebar.Item>
               </Sidebar.Collapse>
               <Sidebar.Item as={Link} to="/stagiaires" icon={HiUsers} className={currentPage === "/stagiaires" ? "bg-gray-100 dark:bg-gray-700" : ""}>

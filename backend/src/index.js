@@ -1,48 +1,62 @@
+// index.js
 const express = require('express');
 const mongoose = require('mongoose');
-const userRoutes = require('./routes/userRoutes');
-const reclamationRoutes = require('./routes/reclamationRoutes');
-const fournisseurRoutes = require('./routes/fournisseurRoutes');
-const authRoutes = require('./routes/authRoutes');
-const { authenticateJWT } = require('./middleware/authMiddleware');
-const inscriptionRoutes = require('./routes/inscriptionsRoutes');
-
-
-require('dotenv').config();
+const cors = require('cors');
 
 const app = express();
 app.use(express.json());
+app.use(cors());
 
-const PORT = process.env.PORT || 3002;
+// Connect directly to MongoDB
+mongoose.connect('mongodb://localhost:27017/crmofppt')
+  .then(() => console.log('Connected to MongoDB'))
+  .catch(err => console.error('MongoDB connection error:', err));
 
-const cors = require('cors');
-app.use(cors({
-  origin: 'http://localhost:5173', // Autorise uniquement ton frontend
-  credentials: true, // Autorise l'envoi des cookies et headers d'authentification
-}));
+// Stock Model (models/Stock.js)
+const stockSchema = new mongoose.Schema({
+  produit: String,
+  quantite: Number,
+  zone: String,
+  date_entree: { type: Date, default: Date.now }
+});
+const Stock = mongoose.model('Stock', stockSchema);
 
-
-// Connect to MongoDB
-mongoose.connect(process.env.MONGO_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true
-}).then(() => console.log('MongoDB connected'))
-  .catch(err => console.log(err));
-
-// Routes
-app.use('/api/login', authRoutes);
-app.use('/api/users', authenticateJWT, userRoutes);
-app.use('/api/reclamations', authenticateJWT, reclamationRoutes);
-app.use('/api/fournisseurs', authenticateJWT, fournisseurRoutes);
-app.use('/api/inscriptions', authenticateJWT, inscriptionRoutes);
-
-
-// Global error handling middleware
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).send('Something broke!');
+// CRUD Routes
+app.post('/api/stocks', async (req, res) => {
+  try {
+    const newStock = new Stock(req.body);
+    await newStock.save();
+    res.status(201).json(newStock);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
 });
 
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+app.get('/api/stocks/zone/:zone', async (req, res) => {
+  try {
+    const stocks = await Stock.find({ zone: req.params.zone });
+    res.json(stocks);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
+
+app.put('/api/stocks/:id', async (req, res) => {
+  try {
+    const updatedStock = await Stock.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    res.json(updatedStock);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+app.delete('/api/stocks/:id', async (req, res) => {
+  try {
+    await Stock.findByIdAndDelete(req.params.id);
+    res.json({ message: 'Deleted successfully' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.listen(3002, () => console.log('Server running on http://localhost:3002'));

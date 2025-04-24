@@ -1,5 +1,5 @@
 import type { FC } from "react";
-import { Button, DarkThemeToggle, Navbar } from "flowbite-react";
+import {  DarkThemeToggle, Navbar } from "flowbite-react";
 
 const ExampleNavbar: FC = function () {
   return (
@@ -10,15 +10,11 @@ const ExampleNavbar: FC = function () {
             <Navbar.Brand href="/">
               <img alt="" src="/images/logo.svg" className="mr-3 h-6 sm:h-8" />
               <span className="self-center whitespace-nowrap text-2xl font-semibold dark:text-white">
-                OFPPT CRM
+                PROJET D'INTERNAT
               </span>
             </Navbar.Brand>
           </div>
           <div className="flex items-center gap-3">
-        
-            <Button color="primary" href="https://flowbite.com/pro/">
-              Upgrade to Pro
-            </Button>
             <DarkThemeToggle />
           </div>
         </div>

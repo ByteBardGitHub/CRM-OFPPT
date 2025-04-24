@@ -1,58 +1,87 @@
 const express = require('express');
-const Stock = require('../models/Stock');
-
 const router = express.Router();
+const Stock = require('../models/Stock');
+const ExcelJS = require('exceljs');
 
-// Get all stocks
-router.get('/', async (req, res) => {
+// Enhanced GET endpoint with zone filtering
+router.get('/zone/:zone', async (req, res) => {
   try {
-    const stocks = await Stock.find();
+    const stocks = await Stock.find({ zone: req.params.zone });
     res.json(stocks);
   } catch (err) {
-    res.status(500).json({ message: 'Server error' });
+    res.status(500).json({ 
+      message: `Error retrieving ${req.params.zone} stock`,
+      error: err.message 
+    });
   }
 });
 
-// Add a new stock
+// Excel Export Endpoint
+router.get('/export/zone/:zone', async (req, res) => {
+  try {
+    const stocks = await Stock.find({ zone: req.params.zone });
+    
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet(req.params.zone);
+
+    // French headers
+    worksheet.columns = [
+      { header: 'Produit', key: 'produit', width: 30 },
+      { header: 'Quantité', key: 'quantite', width: 15 },
+      { header: 'Zone', key: 'zone', width: 20 },
+      { header: 'Date Entrée', key: 'date_entree', width: 25 }
+    ];
+
+    stocks.forEach(stock => {
+      worksheet.addRow({
+        produit: stock.produit,
+        quantite: stock.quantite,
+        zone: stock.zone,
+        date_entree: stock.date_entree.toLocaleDateString('fr-FR', {
+          day: '2-digit',
+          month: '2-digit',
+          year: 'numeric'
+        })
+      });
+    });
+
+    res.setHeader('Content-Type', 
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    res.setHeader('Content-Disposition', 
+      `attachment; filename=stock-${req.params.zone}.xlsx`);
+
+    await workbook.xlsx.write(res);
+    res.end();
+
+  } catch (err) {
+    res.status(500).json({
+      message: `Export failed for ${req.params.zone}`,
+      error: err.message
+    });
+  }
+});
+
+// Enhanced POST with validation
 router.post('/', async (req, res) => {
   const { produit, quantite, zone } = req.body;
+  
+  if (!['Épicerie', 'Fruits et Légumes', 'Conserves', 'Produits et Matériaux'].includes(zone)) {
+    return res.status(400).json({ message: 'Zone invalide' });
+  }
+
   try {
-    const newStock = new Stock({ produit, quantite, zone });
+    const newStock = new Stock({
+      produit,
+      quantite: Math.max(1, quantite), // Ensure minimum quantity
+      zone
+    });
     await newStock.save();
     res.status(201).json(newStock);
   } catch (err) {
-    res.status(500).json({ message: 'Server error' });
-  }
-});
-
-// Update a stock
-router.put('/:id', async (req, res) => {
-  const { produit, quantite, zone } = req.body;
-  try {
-    const stock = await Stock.findById(req.params.id);
-    if (!stock) {
-      return res.status(404).json({ message: 'Stock not found' });
-    }
-    stock.produit = produit;
-    stock.quantite = quantite;
-    stock.zone = zone;
-    await stock.save();
-    res.json(stock);
-  } catch (err) {
-    res.status(500).json({ message: 'Server error' });
-  }
-});
-
-// Delete a stock
-router.delete('/:id', async (req, res) => {
-  try {
-    const stock = await Stock.findByIdAndDelete(req.params.id);
-    if (!stock) {
-      return res.status(404).json({ message: 'Stock not found' });
-    }
-    res.json({ message: 'Stock deleted' });
-  } catch (err) {
-    res.status(500).json({ message: 'Server error' });
+    res.status(400).json({
+      message: 'Validation error',
+      error: err.message
+    });
   }
 });
 

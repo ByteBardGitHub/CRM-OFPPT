@@ -16,10 +16,8 @@ import ChambresPage from "./pages/chambres";
 import Zona1Page from "./pages/stock/zona1";
 import Zona2Page from "./pages/stock/zona2";
 import Zona3Page from "./pages/stock/zona3";
-import Zona4Page from "./pages/stock/zona4";
-import ProtectedRoute from "./components/ProtectedRoute"; // Import ProtectedRoute
+import Zona4Page from "./pages/stock/zona4"; 
 import Settings from "./pages/settings";
-import EcommerceProductsPage from "./pages/e-commerce/products";
 import UserListPage from "./pages/users/list";
 import Inscription from "./pages/Inscription";
 
@@ -42,7 +40,6 @@ root.render(
           {/* <Route element={<ProtectedRoute />}> */}
             <Route path="/dashboard" element={<DashboardPage />} />
             <Route path="/reclamation" element={<ReclamationPage />} />
-            <Route path="/products" element={<EcommerceProductsPage />} />
             <Route path="/users" element={<UserListPage />} />
             <Route path="/fournisseurs" element={<FournisseursPage />} />
             <Route path="/facturation" element={<FacturationPage />} />
